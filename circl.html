@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIRCL — pyecsca-style documentation</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="document">
+    <aside class="sidebar">
+      <div class="brand"><a href="index.html">pyecsca</a></div>
+      <h3>Navigation</h3>
+      <ul>
+        <li><a href="#">Installation</a></li>
+        <li><a href="#">Notebooks</a></li>
+        <li><a href="#">API reference</a></li>
+        <li><a href="#">ECC in Libraries</a>
+          <ul>
+            <li><a href="#">BearSSL</a></li>
+            <li><a href="#">BoringSSL</a></li>
+            <li><a href="#">Botan</a></li>
+            <li><a href="#">BouncyCastle</a></li>
+            <li><a href="#">fastecdsa</a></li>
+            <li class="current">CIRCL</li>
+            <li><a href="#">Go</a></li>
+            <li><a href="#">Intel IPP cryptography</a></li>
+            <li><a href="#">OpenSSL</a></li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Related Topics</h3>
+      <ul>
+        <li><a href="index.html">Documentation overview</a></li>
+        <li><a href="#">ECC in Libraries</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <h1>CIRCL<a class="headerlink" href="#circl" id="circl">¶</a></h1>
+
+      <p><strong>Version:</strong> <code>main branch snapshot</code></p>
+      <p><strong>Repository:</strong> <a href="https://github.com/cloudflare/circl">https://github.com/cloudflare/circl</a></p>
+      <p><strong>Docs:</strong></p>
+
+      <h2 id="primitives">Primitives<a class="headerlink" href="#primitives">¶</a></h2>
+      <p>X25519, X448</p>
+
+      <h3 id="x25519">X25519<a class="headerlink" href="#x25519">¶</a></h3>
+
+      <p><strong>KeyGen:</strong></p>
+      <ul>
+        <li>Montgomery</li>
+        <li>Right-to-left Joye ladder via <code>KeyGen -&gt; ladderJoye</code></li>
+        <li>xz</li>
+        <li>Scalar clamping via <code>k[0] &amp;= 248</code> and <code>k[31] = (k[31] &amp; 127) | 64</code></li>
+        <li>Fixed-point multiplication with the generator point</li>
+      </ul>
+
+      <p><strong>Derive:</strong></p>
+      <ul>
+        <li>Montgomery</li>
+        <li>Left-to-right Montgomery ladder via <code>Shared -&gt; ladderMontgomery</code></li>
+        <li>xz</li>
+        <li>Same scalar clamping as in KeyGen</li>
+        <li>Public-key validation against low-order points inside <code>Shared</code></li>
+      </ul>
+
+      <p><strong>Implementation notes:</strong></p>
+      <ul>
+        <li><code>ladderJoye</code> is documented in source as a fixed-point multiplication using the generator.</li>
+        <li><code>ladderMontgomery</code> is documented in source as a generic scalar point multiplication.</li>
+        <li>Internal ladder state uses 5 field elements: <code>[x1, x2, z2, x3, z3]</code> for Montgomery multiplication.</li>
+      </ul>
+
+      <h3 id="x448">X448<a class="headerlink" href="#x448">¶</a></h3>
+
+      <p><strong>KeyGen:</strong></p>
+      <ul>
+        <li>Montgomery</li>
+        <li>Right-to-left Joye ladder via <code>KeyGen -&gt; ladderJoye</code></li>
+        <li>xz</li>
+        <li>Scalar clamping via <code>k[0] &amp;= 252</code> and <code>k[55] |= 128</code></li>
+        <li>Fixed-point multiplication with the generator point</li>
+      </ul>
+
+      <p><strong>Derive:</strong></p>
+      <ul>
+        <li>Montgomery</li>
+        <li>Left-to-right Montgomery ladder via <code>Shared -&gt; ladderMontgomery</code></li>
+        <li>xz</li>
+        <li>Same scalar clamping as in KeyGen</li>
+        <li>Public-key validation against low-order points inside <code>Shared</code></li>
+      </ul>
+
+      <p><strong>Implementation notes:</strong></p>
+      <ul>
+        <li>The package implements Diffie-Hellman as specified in RFC 7748.</li>
+        <li>Source files include generic and amd64-specific code paths, including <code>curve_generic.go</code>, <code>curve_amd64.go</code>, and <code>curve_amd64.s</code>.</li>
+        <li>The ladder code uses Montgomery differential-addition / doubling structure over <code>fp448</code>.</li>
+      </ul>
+
+      <h3 id="observations">Observations<a class="headerlink" href="#observations">¶</a></h3>
+      <ul>
+        <li>CIRCL uses different ladder variants for fixed-point key generation and variable-point shared-secret derivation.</li>
+        <li>Both X25519 and X448 combine scalar clamping, xz coordinates, and protocol-level low-order public-key validation.</li>
+        <li>The implementation is package-specific rather than a single unified ECC engine.</li>
+      </ul>
+
+      <footer>
+        <p>Static pyecsca-style page prepared for GitHub Pages deployment.</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
